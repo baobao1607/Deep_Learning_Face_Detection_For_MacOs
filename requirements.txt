@@ -1,0 +1,19 @@
+deactivate
+rm -rf "name of virtual env"
+python3.11 -m venv tf-metal
+source tf-metal/bin/activate
+python -m pip install numpy==1.26.4
+python -m pip install tensorflow-macos==2.14.0
+python -m pip install tensorflow-metal==1.1.0
+python -m pip install "opencv-python-headless<4.8"
+
+
+Note: 
+use multiprocessing to boost up speed
+create JSON file for further updating
+
+
+
+
+config.py -> git clone to google collab
+k-fold repetition
