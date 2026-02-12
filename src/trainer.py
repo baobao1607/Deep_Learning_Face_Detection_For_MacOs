@@ -22,7 +22,7 @@ class Trainer:
             save_freq='epoch',
             save_best_only=True,
             monitor="val_loss",
-            verbose=0
+            verbose=1
         )
 
         self.last_ckpt_cb = tf.keras.callbacks.ModelCheckpoint(
@@ -30,7 +30,7 @@ class Trainer:
             save_weights_only=False,
             save_best_only=False,
             save_freq="epoch",
-            verbose=0,
+            verbose=1,
         )
 
 

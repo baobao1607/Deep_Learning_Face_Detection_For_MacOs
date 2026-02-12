@@ -17,3 +17,10 @@ create JSON file for further updating
 
 config.py -> git clone to google collab
 k-fold repetition
+
+
+
+val_binary_crossentropy in early stopping
+in compile loss = tf.kera.val_binary_crossentropy(add from_logits = true)
+add weigth regularization
+add droput
