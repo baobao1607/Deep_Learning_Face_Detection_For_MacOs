@@ -70,7 +70,6 @@ class DatasetManager:
 
         print("BatchPreprocessing.......")
         train_ds, valid_ds, test_ds = self.batcher.build_all()
-        self.batcher.summary()
         print("\n")
 
         return train_ds, valid_ds, test_ds

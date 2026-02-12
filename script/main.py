@@ -66,7 +66,7 @@ def main(model_name):
     trainer.train(
         train_ds = train_ds,
         val_ds= valid_ds,
-        epochs = 20,
+        epochs = 40,
         class_weight = class_weight,
     )
 

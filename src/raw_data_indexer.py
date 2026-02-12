@@ -100,6 +100,39 @@ class RawDataIndexer:
             #image is the key, variable is the whole image paths (relative_path)
             json.dump({"images": image_paths}, f, indent=4)
 
+    #this function count how many ffhq and fake images per generator
+    def count_data_sources(self, image_paths):
+        summary = {
+            "total": len(image_paths),
+            "ffhq": 0,
+            "fake_total": 0,
+            "fake_generators": {},
+            "unknown": 0,
+        }
+
+        for relative_path in image_paths:
+            #normalize separators to keep parsing stable
+            normalized = relative_path.replace("\\", "/")
+            parts = normalized.split("/")
+
+            if len(parts) == 0:
+                summary["unknown"] += 1
+                continue
+
+            root = parts[0].lower()
+
+            if root == "ffhq":
+                summary["ffhq"] += 1
+            elif root == "fake":
+                summary["fake_total"] += 1
+                generator = parts[1].lower() if len(parts) > 1 and parts[1] else "unknown_generator"
+                summary["fake_generators"][generator] = summary["fake_generators"].get(generator, 0) + 1
+            else:
+                summary["unknown"] += 1
+
+        summary["fake_generators"] = dict(sorted(summary["fake_generators"].items()))
+        return summary
+
     #this function scan the raw dataset and see if there is any changes
     def scan_and_detect(self):
         print("Scanning in progress")
@@ -125,5 +158,6 @@ class RawDataIndexer:
         return {
             "changed": (new_hash != old_hash),
             "len_image_paths": len(image_path),
-            "hash": new_hash
+            "hash": new_hash,
+            "source_counts": self.count_data_sources(image_path),
         }

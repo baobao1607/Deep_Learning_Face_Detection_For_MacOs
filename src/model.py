@@ -34,7 +34,7 @@ class BaseModel:
     def compile(self):
         self.model.compile(
             optimizer=tf.keras.optimizers.Adam(self.lr),
-            loss="binary_crossentropy",
+            loss = tf.keras.losses.BinaryCrossentropy(label_smoothing=0.05),
             metrics=[
                 "accuracy",
                 tf.keras.metrics.Precision(name="precision"),

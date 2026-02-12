@@ -43,7 +43,7 @@ class Trainer:
 
         self.es_cb = tf.keras.callbacks.EarlyStopping(
             monitor="val_loss",
-            patience=5,
+            patience=7,
             restore_best_weights=True,
             verbose = 1
         )
