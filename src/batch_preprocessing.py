@@ -1,7 +1,7 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'     # hides all TF C++ logs
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'    # prevents grappler pruner warnings
-os.environ['GRAPHLITE_DISABLE'] = '1'        # additional grappler suppression
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'     
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'    
+os.environ['GRAPHLITE_DISABLE'] = '1'        
 
 import tensorflow as tf
 import json
@@ -51,6 +51,7 @@ class BatchPreprocessor:
             return 0
         else:
             return 1
+        
         
     
     def load_split_paths(self, split):
