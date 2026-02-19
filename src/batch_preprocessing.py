@@ -29,6 +29,7 @@ class BatchPreprocessor:
         self.augmenter = self.build_augmenter()
         self.batch_done_file = os.path.join(self.metadata_dir, "batch.done")
         self.split_index = os.path.join(self.metadata_dir,"split_index.json")
+        self.mapping = os.path.join(self.metadata_dir, "binary_mapping.json")
         self.seed = 42
 
     def build_normalizer(self):
@@ -120,21 +121,113 @@ class BatchPreprocessor:
         return ds
 
     
+    def build_data_set(self, split):
+        with open (self.mapping, "r") as f:
+            mapping_path = json.load(f)
+
+        file_paths = []
+        labels = []
+        
+        #./dataset/train
+        #./dataset/valid
+        #./dataset/test
+        split_dir = os.path.join(self.dataset_dir, split)
+
+        for folder_name in os.listdir(split_dir):
+            #./dataset/train/real , etc.....
+            folder_dir = os.path.join(split_dir,folder_name)
+
+            #if not a directory
+            if not os.path.isdir(folder_dir):
+                continue
+            
+            #raise error
+            if folder_name not in mapping_path:
+                raise ValueError(f"{folder_name} not found in mapping file")
+        
+            #label = 1 or 0
+            label = mapping_path[folder_name]
+
+            for img in os.listdir(folder_dir):
+                img_path = os.path.join(folder_dir, img)
+                file_paths.append(img_path)
+                labels.append(label)
+        
+        return file_paths, labels
+    
+
+    def build_pipeline_for_testing(self,subfolder_name):
+        with open (self.mapping, "r") as f:
+            mapping_path = json.load(f)
+
+        file_paths = []
+        labels = []
+
+        label = mapping_path[subfolder_name]
+
+        #./dataset/test/real
+        subfolder_dir = os.path.join(self.dataset_dir,"test",subfolder_name)
+        for img in os.listdir(subfolder_dir):
+            img_path = os.path.join(subfolder_dir,img)
+            file_paths.append(img_path)
+            labels.append(label)
+        
+        ds = tf.data.Dataset.from_tensor_slices((file_paths, labels))
+        ds = ds.map(
+                lambda p, y: self.preprocesses(p, y),
+                num_parallel_calls= tf.data.AUTOTUNE
+        )
+
+        ds = ds.batch(self.batch_size)
+        ds = ds.prefetch(tf.data.AUTOTUNE)
+        return ds
+
+
+    
+
+    def build_pipeline_altered(self, split):
+        file_paths, labels = self.build_data_set(split)
+        ds = tf.data.Dataset.from_tensor_slices((file_paths, labels))
+        if (split == "train"):
+            ds = ds.shuffle(len(file_paths),seed = 42, reshuffle_each_iteration=True)
+            ds = ds.map(
+                lambda p, y: self.preprocesses(p, y),
+                num_parallel_calls= tf.data.AUTOTUNE
+            )
+            '''ds = ds.map(
+                lambda x,y: (self.augmenter(x, training=True), y),
+                num_parallel_calls=tf.data.AUTOTUNE
+            )'''
+        if (split == "val" or split == "test"):
+            ds = ds.map(
+                lambda p, y: self.preprocesses(p, y),
+                num_parallel_calls= tf.data.AUTOTUNE
+            )
+        ds = ds.batch(self.batch_size).prefetch(tf.data.AUTOTUNE)
+        return ds
+        
+
+
     def build_train_ds(self):
-        return self.build_pipeline("train",True)
+        #return self.build_pipeline("train",True)
+        return self.build_pipeline_altered("train")
     
     def build_valid_ds(self):
-        return self.build_pipeline("valid",False)
+        #return self.build_pipeline("valid",False)
+        return self.build_pipeline_altered("val")
     
     def build_test_ds(self):
-        return self.build_pipeline("test",False)
+        #return self.build_pipeline("test",False)
+        return self.build_pipeline_altered("test")
 
     def build_all(self):
         train = self.build_train_ds()
         valid = self.build_valid_ds()
         test = self.build_test_ds()
-        self.summary()
+        #self.summary()
         return train, valid, test
+    
+
 
     
     def summary(self):

@@ -24,3 +24,48 @@ val_binary_crossentropy in early stopping
 in compile loss = tf.kera.val_binary_crossentropy(add from_logits = true)
 add weigth regularization
 add droput
+
+
+
+TRAIN SET
+thispersondoesnotexist: 721
+sfhq: 721
+real: 3608
+StyleGAN2_RichardErkhov_OneMillionFaces: 721
+faceswap: 721
+stable_diffusion: 721
+total count 7213
+
+
+
+VALID SET
+thispersondoesnotexist: 155
+sfhq: 155
+real: 773
+StyleGAN2_RichardErkhov_OneMillionFaces: 155
+faceswap: 155
+stable_diffusion: 155
+total count 1548
+
+thispersondoesnotexist: 155
+sfhq: 155
+real: 774
+StyleGAN2_RichardErkhov_OneMillionFaces: 155
+faceswap: 155
+stable_diffusion: 155
+total count 1549
+
+
+
+
+baseline_v7 augment on, learning rate = 1e-3
+EVALUATING 
+33/33 - 1s - 36ms/step - accuracy: 0.6914 - loss: 0.6138 - precision: 0.6993 - recall: 0.6723
+
+baseline_v9 turn off augment, set learning rate = 1e-4
+EVALUATING
+33/33 - 1s - 42ms/step - accuracy: 0.7482 - loss: 0.5574 - precision: 0.7550 - recall: 0.7355
+
+baseline_v9 reduce dropout from 0.4 to 0.3 , reduce L2 from 1e-4 to 1e-5, learning rate = 1e-4, image size is 214 x 214, augment off
+EVALUATING
+33/33 - 1s - 44ms/step - accuracy: 0.7611 - loss: 0.5417 - precision: 0.7832 - recall: 0.7226

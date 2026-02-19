@@ -8,7 +8,7 @@ class BaseModel:
         self.compile()
 
     def _build_model(self):
-        l2 = tf.keras.regularizers.l2(1e-4)
+        l2 = tf.keras.regularizers.l2(1e-5)
         inputs = tf.keras.Input(shape=self.input_shape)
 
         x = tf.keras.layers.Conv2D(16, 3, activation='relu', padding = "same", kernel_regularizer=l2)(inputs)
@@ -25,7 +25,7 @@ class BaseModel:
 
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
         x = tf.keras.layers.Dense(64, activation='relu', kernel_regularizer=l2)(x)
-        x = tf.keras.layers.Dropout(0.4)(x)
+        x = tf.keras.layers.Dropout(0.3)(x)
         outputs = tf.keras.layers.Dense(1, activation='sigmoid', kernel_regularizer=l2)(x)
 
         model = tf.keras.Model(inputs, outputs, name="BaselineModel")
